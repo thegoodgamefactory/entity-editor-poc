@@ -1,12 +1,81 @@
 [meta]
 name = "slug"
+image = "slug.png"
+
+[attributes]
+
+[attributes.attr_affects_stressed_tile]
+name = "attr_affects_stressed_tile"
+value = 1
+
+[attributes.attr_debug]
+name = "attr_debug"
+value = 0
+
+[attributes.attr_dies_from_rolling_ball]
+name = "attr_dies_from_rolling_ball"
+value = 1
+
+[attributes.attr_handle_portal_collision]
+name = "attr_handle_portal_collision"
+value = 1
+
+[attributes.attr_handle_pressure_plate_collision]
+name = "attr_handle_pressure_plate_collision"
+value = 1
+
+[attributes.attr_handle_projectile_collision]
+name = "attr_handle_projectile_collision"
+value = 1
+
+[attributes.attr_handle_triggerable_collision]
+name = "attr_handle_triggerable_collision"
+value = 1
+
+[attributes.attr_pushes_player_back_on_invalid_push]
+name = "attr_pushes_player_back_on_invalid_push"
+value = 1
+
+[attributes.attr_stage_1_arrow_bullets_collide]
+name = "attr_stage_1_arrow_bullets_collide"
+value = 1
+
+[attributes.attr_stage_1_arrow_bullets_collide_with_death]
+name = "attr_stage_1_arrow_bullets_collide_with_death"
+value = 1
+
+[attributes.attr_stage_1_ghoul_bullets_collide]
+name = "attr_stage_1_ghoul_bullets_collide"
+value = 1
+
+[attributes.attr_stage_1_spider_bullets_collide]
+name = "attr_stage_1_spider_bullets_collide"
+value = 1
+
+[attributes.attr_stage_1_spider_bullets_collide_with_death]
+name = "attr_stage_1_spider_bullets_collide_with_death"
+value = 1
+
+[attributes.attr_status_vulnerable_doom]
+name = "attr_status_vulnerable_doom"
+value = 1
+
+[attributes.attr_status_vulnerable_haste]
+name = "attr_status_vulnerable_haste"
+value = 1
+
+[attributes.attr_status_vulnerable_slow]
+name = "attr_status_vulnerable_slow"
+value = 1
 
 [components]
 
-[speed]
+[components.moves]
+
+[components.speed]
 speed = 15
 
-[velocity]
+[components.velocity]
 x = 1
 y = 1
 

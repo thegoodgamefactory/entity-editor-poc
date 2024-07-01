@@ -11,4 +11,6 @@ x = "int"
 y = "int"
 description = "What direction our entity moves in"
 
+[kills_player_on_collision]
+description = "When the player collides with this entity, it dies"
 

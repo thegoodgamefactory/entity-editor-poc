@@ -8,12 +8,12 @@ dpg.create_context()
 dpg.create_viewport()
 dpg.setup_dearpygui()
 
-
 attributes = tomlkit.loads(open('test-attributes.toml').read())
 components = tomlkit.loads(open('test-components.toml').read())
+entity = tomlkit.loads(open("test-slug.toml").read())
 
 
-width, height, channels, data = dpg.load_image("slug.png")
+width, height, channels, data = dpg.load_image(entity['meta']['image'])
 
 with dpg.theme() as warning_theme:
     with dpg.theme_component(dpg.mvButton):
@@ -39,11 +39,15 @@ with dpg.window(label="Entity editor", width=500, height=650):
     # Attribute listing
     with dpg.group():
         with dpg.collapsing_header(label="Attributes"):
-            for attribute in attributes:
+            for attribute in entity['attributes']:
                 with dpg.group(horizontal=True, indent=12):
-                    dpg.add_button(label=attribute)
-                    dpg.add_checkbox(label="enabled")
+                    for key, value in entity['attributes'][attribute].items():
+                        if key == 'name':
+                            dpg.add_button(label=value)
+                        elif key == 'value':
+                            dpg.add_checkbox(label="enabled", default_value=bool(value))
                     dpg.add_button(label='delete')
+                    dpg.bind_item_theme(dpg.last_item(), warning_theme)
         dpg.add_button(label="Add Attribute", callback=save_callback)
         dpg.bind_item_theme(dpg.last_item(), action_theme)
 
@@ -58,17 +62,17 @@ with dpg.window(label="Entity editor", width=500, height=650):
     # Component listing
     with dpg.group():
         with dpg.collapsing_header(label="Components"):
-            for component in components:
+            for component in entity['components']:
                 with dpg.group(horizontal=True):
                     with dpg.collapsing_header(label=component, indent=12):
-                        for key, value in components[component].items():
+                        for key, value in entity['components'][component].items(): #components[component].items():
                             with dpg.group(horizontal=True):
                                 dpg.add_text(key + ':')
-                                if value == 'int':
-                                    dpg.add_input_int()
-                                elif value == 'string':
-                                    dpg.add_input_text()
-                                elif type(value) == tomlkit.items.Array:
+                                if components[component][key] == 'int':
+                                    dpg.add_input_int(default_value=value)
+                                elif components[component][key] == 'string':
+                                    dpg.add_input_text(default_value=value)
+                                elif type(components[component][key]) == tomlkit.items.Array:
                                     dpg.add_combo(value)
                                 else:
                                     dpg.add_text(value)
