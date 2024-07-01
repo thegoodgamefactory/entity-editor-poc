@@ -1,0 +1,14 @@
+[moves]
+behaviour = ["roams", "moves_with_reflection"]
+description = "What kind of movement our entity does"
+
+[speed]
+speed = "int"
+description = "How fast the entity moves"
+
+[velocity]
+x = "int"
+y = "int"
+description = "What direction our entity moves in"
+
+

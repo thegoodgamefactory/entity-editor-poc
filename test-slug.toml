@@ -1,0 +1,12 @@
+[meta]
+name = "slug"
+
+[components]
+
+[speed]
+speed = 15
+
+[velocity]
+x = 1
+y = 1
+

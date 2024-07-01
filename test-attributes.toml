@@ -1,0 +1,7 @@
+[attr_handle_portal_collision]
+type = "bool"
+description = "Whether or not this entity can go through portals"
+
+[attr_minimap_colour]
+type = "colour"
+description = "The RGB colour of the entity on the minimap"
