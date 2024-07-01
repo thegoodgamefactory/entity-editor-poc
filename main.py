@@ -4,6 +4,11 @@ import tomlkit
 def save_callback():
     print("Save Clicked")
 
+def delete_attribute(sender, app_data):
+    print(sender)
+    print(app_data)
+
+
 dpg.create_context()
 dpg.create_viewport()
 dpg.setup_dearpygui()
@@ -46,7 +51,7 @@ with dpg.window(label="Entity editor", width=500, height=650):
                             dpg.add_button(label=value)
                         elif key == 'value':
                             dpg.add_checkbox(label="enabled", default_value=bool(value))
-                    dpg.add_button(label='delete')
+                    dpg.add_button(label='delete', callback=delete_attribute, tag="delete:" + attribute)
                     dpg.bind_item_theme(dpg.last_item(), warning_theme)
         dpg.add_button(label="Add Attribute", callback=save_callback)
         dpg.bind_item_theme(dpg.last_item(), action_theme)
