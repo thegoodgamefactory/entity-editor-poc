@@ -75,17 +75,28 @@ with dpg.window(label="Entity editor", width=500, height=650):
     # Attribute listing
     with dpg.group():
         with dpg.collapsing_header(label="Attributes"):
-            for attribute in entity['attributes']:
-                with dpg.group(horizontal=True, indent=12, tag="row:" + attribute):
-                    for key, value in entity['attributes'][attribute].items():
-                        if key == 'name':
-                            dpg.add_button(label=value, tag="button:" + attribute)
-                        elif key == 'value':
-                            dpg.add_checkbox(label="enabled", tag="checkbox:" + attribute, default_value=bool(value))
-                    dpg.add_button(label='delete', callback=delete_attribute, tag="delete:" + attribute)
-                    dpg.bind_item_theme(dpg.last_item(), warning_theme)
-        dpg.add_button(label="Add Attribute", callback=save_callback)
-        dpg.bind_item_theme(dpg.last_item(), action_theme)
+            with dpg.table(resizable=True, policy=dpg.mvTable_SizingStretchProp,
+                   borders_outerH=True, borders_innerV=True, borders_innerH=True, borders_outerV=True):
+
+                dpg.add_table_column(label="Name")
+                dpg.add_table_column(label="Enabled?")
+                dpg.add_table_column(label="Delete?")
+
+                for attribute in entity['attributes']:
+                    with dpg.table_row(tag="row:" + attribute):
+                        for key, value in entity['attributes'][attribute].items():
+                            if key == 'name':
+                                with dpg.table_cell():
+                                    dpg.add_button(label=value, tag="button:" + attribute)
+                            elif key == 'value':
+                                with dpg.table_cell():
+                                    checkbox_label = "enabled" if bool(value) else "disabled"
+                                    dpg.add_checkbox(label=checkbox_label, tag="checkbox:" + attribute, default_value=bool(value))
+                        with dpg.table_cell():
+                            dpg.add_button(label='delete', callback=delete_attribute, tag="delete:" + attribute)
+                        dpg.bind_item_theme(dpg.last_item(), warning_theme)
+            dpg.add_button(label="Add Attribute", callback=save_callback)
+            dpg.bind_item_theme(dpg.last_item(), action_theme)
 
     # Attribute popup
     with dpg.popup(dpg.last_item(), mousebutton=dpg.mvMouseButton_Left):
