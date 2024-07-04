@@ -1,13 +1,38 @@
+from typing import List
 import dearpygui.dearpygui as dpg
 import tomlkit
+import os
+
+# TODO - move to config somewhere
+unit_stage_dir = '/home/joe/code/mr-figs/src/units'
+entity = tomlkit.loads(open("test-slug.toml").read())
 
 def save_callback():
     print("Save Clicked")
 
 def delete_attribute(sender, app_data):
-    print(sender)
-    print(app_data)
+    attribute = sender.split(':')[1]
+    dpg.delete_item('row:' + attribute)
 
+def get_entities_for_stage(stage: str) -> List[str]:
+    return [unit for unit in os.listdir(unit_stage_dir + '/' + stage)]
+
+def change_current_stage(sender, app_data):
+    entities = get_entities_for_stage(app_data)
+    dpg.configure_item("entity_selection", default_value=entities[0])
+    dpg.configure_item("entity_selection", items=entities)
+
+def get_current_entity_data(sender, app_data) -> str:
+    selected_stage = dpg.get_value('stage_selection')
+    selected_entity = dpg.get_value('entity_selection')
+    return tomlkit.loads(open(unit_stage_dir + '/' + selected_stage + '/' + selected_entity).read())
+
+stages = [stage for stage in os.listdir(unit_stage_dir)]
+stages.sort()
+
+current_stage = stages[0]
+
+entities = get_entities_for_stage(current_stage)
 
 dpg.create_context()
 dpg.create_viewport()
@@ -15,8 +40,6 @@ dpg.setup_dearpygui()
 
 attributes = tomlkit.loads(open('test-attributes.toml').read())
 components = tomlkit.loads(open('test-components.toml').read())
-entity = tomlkit.loads(open("test-slug.toml").read())
-
 
 width, height, channels, data = dpg.load_image(entity['meta']['image'])
 
@@ -30,27 +53,35 @@ with dpg.theme() as action_theme:
         dpg.add_theme_color(dpg.mvThemeCol_Button, (0, 125, 0), category=dpg.mvThemeCat_Core)
         dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, (0, 175, 0), category=dpg.mvThemeCat_Core)
 
-
 with dpg.texture_registry():
     dpg.add_static_texture(width=width, height=height, default_value=data, tag="entity_texture")
 
 with dpg.window(label="Entity editor", width=500, height=650):
     with dpg.group(horizontal=True):
-        dpg.add_combo(["Stage 1", "Stage 2", "Stage 3", "Stage 4"])
-        dpg.add_text(">")
-        dpg.add_combo(["Slug", "Spider", "Ghoul"])
+        dpg.add_combo(
+            stages,
+            callback=change_current_stage,
+            tag="stage_selection",
+            default_value=current_stage
+        )
+        dpg.add_combo(
+            entities,
+            callback=get_current_entity_data,
+            tag="entity_selection", 
+            default_value=entities[0]
+        )
     dpg.add_image("entity_texture")
 
     # Attribute listing
     with dpg.group():
         with dpg.collapsing_header(label="Attributes"):
             for attribute in entity['attributes']:
-                with dpg.group(horizontal=True, indent=12):
+                with dpg.group(horizontal=True, indent=12, tag="row:" + attribute):
                     for key, value in entity['attributes'][attribute].items():
                         if key == 'name':
-                            dpg.add_button(label=value)
+                            dpg.add_button(label=value, tag="button:" + attribute)
                         elif key == 'value':
-                            dpg.add_checkbox(label="enabled", default_value=bool(value))
+                            dpg.add_checkbox(label="enabled", tag="checkbox:" + attribute, default_value=bool(value))
                     dpg.add_button(label='delete', callback=delete_attribute, tag="delete:" + attribute)
                     dpg.bind_item_theme(dpg.last_item(), warning_theme)
         dpg.add_button(label="Add Attribute", callback=save_callback)
