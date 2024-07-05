@@ -5,3 +5,7 @@ description = "Whether or not this entity can go through portals"
 [attr_minimap_colour]
 type = "colour"
 description = "The RGB colour of the entity on the minimap"
+
+[attr_bullet_collision_attribute_check]
+type = "bool"
+description = "What attribute to check against on the collided entity"

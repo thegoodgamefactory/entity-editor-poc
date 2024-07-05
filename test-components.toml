@@ -14,3 +14,6 @@ description = "What direction our entity moves in"
 [kills_player_on_collision]
 description = "When the player collides with this entity, it dies"
 
+[dies_on_event]
+event = "str"
+description = "When the event is received, this entity will die"

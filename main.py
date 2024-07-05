@@ -5,20 +5,26 @@ import os
 
 # TODO - move to config somewhere
 unit_stage_dir = '/home/joe/code/mr-figs/src/units'
-entity = tomlkit.loads(open("test-slug.toml").read())
-
-def save_callback():
-    print("Save Clicked")
 
 def delete_attribute(sender, app_data):
     attribute = sender.split(':')[1]
     dpg.delete_item('row:' + attribute)
 
-def get_entities_for_stage(stage: str) -> List[str]:
-    return [unit for unit in os.listdir(unit_stage_dir + '/' + stage)]
+def get_entities_for_stage(stage: str, unit_type: str) -> List[str]:
+    print(unit_stage_dir, stage, unit_type)
+    print([unit for unit in os.listdir(unit_stage_dir + '/' + stage + '/' + unit_type)])
+    return [unit for unit in os.listdir(unit_stage_dir + '/' + stage + '/' + unit_type)]
 
 def change_current_stage(sender, app_data):
-    entities = get_entities_for_stage(app_data)
+    unit_type = dpg.get_value('type_selection')
+    entities = get_entities_for_stage(app_data, unit_type)
+    dpg.configure_item("entity_selection", default_value=entities[0])
+    dpg.configure_item("entity_selection", items=entities)
+
+def change_current_type(sender, app_data):
+    unit_type = dpg.get_value('type_selection')
+    stage = dpg.get_value('stage_selection')
+    entities = get_entities_for_stage(stage, unit_type)
     dpg.configure_item("entity_selection", default_value=entities[0])
     dpg.configure_item("entity_selection", items=entities)
 
@@ -32,7 +38,14 @@ stages.sort()
 
 current_stage = stages[0]
 
-entities = get_entities_for_stage(current_stage)
+unit_types = [types for types in os.listdir(unit_stage_dir + '/' + current_stage)]
+unit_types.sort()
+
+current_type = unit_types[0]
+
+entities = get_entities_for_stage(current_stage, current_type)
+
+entity = tomlkit.loads(open(unit_stage_dir + '/' + current_stage + '/' + current_type + '/' + entities[0]).read())
 
 dpg.create_context()
 dpg.create_viewport()
@@ -41,7 +54,7 @@ dpg.setup_dearpygui()
 attributes = tomlkit.loads(open('test-attributes.toml').read())
 components = tomlkit.loads(open('test-components.toml').read())
 
-width, height, channels, data = dpg.load_image(entity['meta']['image'])
+width, height, channels, data = dpg.load_image('slug.png')
 
 with dpg.theme() as warning_theme:
     with dpg.theme_component(dpg.mvButton):
@@ -57,12 +70,18 @@ with dpg.texture_registry():
     dpg.add_static_texture(width=width, height=height, default_value=data, tag="entity_texture")
 
 with dpg.window(label="Entity editor", width=500, height=650):
-    with dpg.group(horizontal=True):
+    with dpg.group(horizontal=True, width=155):
         dpg.add_combo(
             stages,
             callback=change_current_stage,
             tag="stage_selection",
             default_value=current_stage
+        )
+        dpg.add_combo(
+            unit_types,
+            callback=change_current_type,
+            tag="type_selection",
+            default_value=current_type
         )
         dpg.add_combo(
             entities,
@@ -82,20 +101,17 @@ with dpg.window(label="Entity editor", width=500, height=650):
                 dpg.add_table_column(label="Enabled?")
                 dpg.add_table_column(label="Delete?")
 
-                for attribute in entity['attributes']:
-                    with dpg.table_row(tag="row:" + attribute):
-                        for key, value in entity['attributes'][attribute].items():
-                            if key == 'name':
-                                with dpg.table_cell():
-                                    dpg.add_text(value, tag="button:" + attribute)
-                            elif key == 'value':
-                                with dpg.table_cell():
-                                    checkbox_label = "enabled" if bool(value) else "disabled"
-                                    dpg.add_checkbox(label=checkbox_label, tag="checkbox:" + attribute, default_value=bool(value))
+                for key, value in entity['attributes'].items(): 
+                    with dpg.table_row(tag="row:" + key):
                         with dpg.table_cell():
-                            dpg.add_button(label='delete', callback=delete_attribute, tag="delete:" + attribute)
-                        dpg.bind_item_theme(dpg.last_item(), warning_theme)
-            dpg.add_button(label="Add Attribute", callback=save_callback)
+                            dpg.add_text(key, tag="button:" + key)
+                        with dpg.table_cell():
+                            checkbox_label = "enabled" if bool(value) else "disabled"
+                            dpg.add_checkbox(label=checkbox_label, tag="checkbox:" + key, default_value=bool(value))
+                        with dpg.table_cell():
+                            dpg.add_button(label='delete', callback=delete_attribute, tag="delete:" + key)
+                            dpg.bind_item_theme(dpg.last_item(), warning_theme)
+            dpg.add_button(label="Add Attribute")
             dpg.bind_item_theme(dpg.last_item(), action_theme)
 
     # Attribute popup
@@ -109,10 +125,10 @@ with dpg.window(label="Entity editor", width=500, height=650):
     # Component listing
     with dpg.group():
         with dpg.collapsing_header(label="Components"):
-            for component in entity['components']:
+            for component in entity['component']:
                 with dpg.group(horizontal=True):
                     with dpg.collapsing_header(label=component, indent=12):
-                        for key, value in entity['components'][component].items(): #components[component].items():
+                        for key, value in entity['component'][component].items(): #components[component].items():
                             with dpg.group(horizontal=True):
                                 dpg.add_text(key + ':')
                                 if components[component][key] == 'int':
@@ -126,7 +142,7 @@ with dpg.window(label="Entity editor", width=500, height=650):
 
                         dpg.add_button(label='delete')
                         dpg.bind_item_theme(dpg.last_item(), warning_theme)
-        dpg.add_button(label="Add Component", callback=save_callback)
+        dpg.add_button(label="Add Component")
         dpg.bind_item_theme(dpg.last_item(), action_theme)
 
     # Component popup
