@@ -30,8 +30,9 @@ def change_current_type(sender, app_data):
 
 def get_current_entity_data(sender, app_data) -> str:
     selected_stage = dpg.get_value('stage_selection')
+    selected_type = dpg.get_value('type_selection')
     selected_entity = dpg.get_value('entity_selection')
-    return tomlkit.loads(open(unit_stage_dir + '/' + selected_stage + '/' + selected_entity).read())
+    return tomlkit.loads(open(unit_stage_dir + '/' + selected_stage + '/' + selected_type + '/' + selected_entity).read())
 
 stages = [stage for stage in os.listdir(unit_stage_dir)]
 stages.sort()
@@ -136,7 +137,7 @@ with dpg.window(label="Entity editor", width=500, height=650):
                                 elif components[component][key] == 'string':
                                     dpg.add_input_text(default_value=value)
                                 elif type(components[component][key]) == tomlkit.items.Array:
-                                    dpg.add_combo(value)
+                                    dpg.add_combo(components[component][key])
                                 else:
                                     dpg.add_text(value)
 

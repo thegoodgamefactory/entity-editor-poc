@@ -1,5 +1,21 @@
+[dies_on_event]
+event = "str"
+description = "When the event is received, this entity will die"
+
+[emits_particles_on_event]
+event = "str"
+particle_type = "str"
+description = "What particles to emit when an entity receives this event"
+
+[hitbox]
+offset_x = "int"
+offset_y = "int"
+width = "int"
+height = "int"
+description = "The hitbox for an entity to have (optional)"
+
 [moves]
-behaviour = ["roams", "moves_with_reflection"]
+movement_type = ["basic", "roams", "moves_with_reflection"]
 description = "What kind of movement our entity does"
 
 [speed]
@@ -14,6 +30,3 @@ description = "What direction our entity moves in"
 [kills_player_on_collision]
 description = "When the player collides with this entity, it dies"
 
-[dies_on_event]
-event = "str"
-description = "When the event is received, this entity will die"
