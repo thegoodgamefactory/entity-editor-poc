@@ -1,16 +1,10 @@
-[tool.poetry]
-name = "entity-editor"
+[project]
+name = "entity-editor-poc"
 version = "0.1.0"
-description = ""
-authors = ["Joe Reynolds <joereynolds952@gmail.com>"]
-readme = "README.md"
 
-[tool.poetry.dependencies]
-python = "^3.11"
-tomlkit = "^0.12.5"
-dearpygui = "^1.11.1"
+dependencies = [
+    "tomlkit >=0.12.5",
+    "dearpygui >=1.11.1",
+]
 
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.13"
